@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Pokédex</title>
+	<link rel="icon" href="favicon.ico" />
+	<link href="https://fonts.googleapis.com/css?family=Bangers" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="style/style.css">
+</head>
+<body>
+
+	<form>
+		<h1>Pokédex !</h1>
+		<input type="text" placeholder="Poké recherche (name or type)" />
+		<ul></ul>
+	</form>
+
+	<script>
+		const pokedex = 'https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json';
+		
+		const pokemons = [];
+
+		fetch(pokedex)// récupere des données JSON pour les réutiliser ensuite
+			.then(blob => blob.json())
+			.then(data => pokemons.push(...data.pokemon));// push chaque donnée dans un seul array
+
+		function trouverPokemon(recherche, pokemons){
+			return pokemons.filter(pokemon => {// permet de filtrer selon une fonction
+				const regex = new RegExp(recherche, 'gi'); // g -> recherche dans l'ensemble de l'array, i -> maj ou min
+				return pokemon.name.match(regex) || pokemon.type.find(type => type.match(regex));
+
+			});
+		}
+
+		function afficherResultat(){
+			const tableauResultat = trouverPokemon(this.value, pokemons);
+			const html = tableauResultat.map(pokemon => {
+				return `
+				<li> 
+				<a href="https://pokemondb.net/pokedex/${pokemon.name}" title="pokemon" target="_blank" ><img src='${pokemon.img}' alt='pokemon' width='42' height='42'/></a>
+					<span><b>${pokemon.name}</b></span>
+					<span>${pokemon.height}</span>
+					<span>${pokemon.type}</span>
+				</li>
+				`;
+			}).join('');
+			resultat.innerHTML = html;
+		}
+
+		const input = document.querySelector('input');
+		const resultat = document.querySelector('ul');
+
+		input.addEventListener('change', afficherResultat);
+		input.addEventListener('keyup', afficherResultat);
+
+	</script>
+
+</body>
+</html>
